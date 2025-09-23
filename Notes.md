@@ -143,3 +143,13 @@ Here is an outline established with ChatGPT, which I will try to use only minima
 ✅ End result: You have a Python system that **fetches data, scores players, sets your best lineup, suggests waivers/trades, and alerts you** — all automatically.
 
 ---
+
+
+current objective:
+* use sleeper API to view match ups for week one.
+  * use player ID from match up to get full name
+  * use full name to find stats from fantasy pro
+* Calculate score
+  * figure out how to calulate score from raw stats
+* compare to actual score
+* maybe start with just one player...
