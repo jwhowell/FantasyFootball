@@ -21,6 +21,16 @@ type Roster struct {
 	PlayersPoints  map[string]float64 `json:"players_points"`
 }
 
+type Players struct {
+	PlayerID int `json:"player_id"`
+	FullName string `json:"full_name"`
+	Active bool `json:"active"`
+	Status string `json:"status"`
+	FantasyPositions []string `json:"fantasy_positions"`
+	Position string `json:"position"`
+
+}
+
 func main() {
 	var rosters []Roster
 
