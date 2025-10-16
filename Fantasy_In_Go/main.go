@@ -8,6 +8,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 type Roster struct {
@@ -21,18 +23,59 @@ type Roster struct {
 	PlayersPoints  map[string]float64 `json:"players_points"`
 }
 
-type Players struct {
-	PlayerID int `json:"player_id"`
-	FullName string `json:"full_name"`
-	Active bool `json:"active"`
-	Status string `json:"status"`
+type Player struct {
+	PlayerID         int      `json:"player_id,string"` // accept "6462" as string
+	FullName         string   `json:"full_name"`
+	Active           *bool    `json:"active"` // pointer because it may be null
+	Status           *string  `json:"status"`
 	FantasyPositions []string `json:"fantasy_positions"`
-	Position string `json:"position"`
+	Position         *string  `json:"position"`
+	BirthDate        *string  `json:"birth_date"`
+	Number           *int     `json:"number"`
+	Age              *int     `json:"age"`
+}
+
+func fetchHTML(url string) (string, error) {
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	return string(body), err
 
 }
 
 func main() {
+
 	var rosters []Roster
+	rawJson, err := os.ReadFile("/home/jwhowell/Code_Projects/FantasyFootball/players.json")
+	if err != nil {
+		log.Fatalf("Error reading json file.")
+	}
+
+	var raw map[string]Player
+	if err := json.Unmarshal(rawJson, &raw); err != nil {
+		log.Fatalf("unmarshal error: %v", err)
+	}
+
+	players := make([]Player, 0, len(raw))
+	for k, p := range raw {
+		if p.PlayerID == 0 {
+			if id, err := strconv.Atoi(k); err == nil {
+				p.PlayerID = id
+			}
+		}
+		players = append(players, p)
+	}
 
 	data, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/matchups/1")
 	if err != nil {
@@ -62,23 +105,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func fetchHTML(url string) (string, error) {
-
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return "", err
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	return string(body), err
-
 }
