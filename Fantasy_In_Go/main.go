@@ -1,15 +1,12 @@
 package main
 
 import (
-	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 type Roster struct {
@@ -24,15 +21,15 @@ type Roster struct {
 }
 
 type Player struct {
-	PlayerID         int      `json:"player_id,string"` // accept "6462" as string
+	PlayerID         string   `json:"player_id"` // accept "6462" as string
 	FullName         string   `json:"full_name"`
-	Active           *bool    `json:"active"` // pointer because it may be null
-	Status           *string  `json:"status"`
+	Active           bool     `json:"active"` // pointer because it may be null
+	Status           string   `json:"status"`
 	FantasyPositions []string `json:"fantasy_positions"`
-	Position         *string  `json:"position"`
-	BirthDate        *string  `json:"birth_date"`
-	Number           *int     `json:"number"`
-	Age              *int     `json:"age"`
+	Position         string   `json:"position"`
+	BirthDate        string   `json:"birth_date"`
+	Number           int      `json:"number"`
+	Age              int      `json:"age"`
 }
 
 func fetchHTML(url string) (string, error) {
@@ -56,7 +53,7 @@ func fetchHTML(url string) (string, error) {
 
 func main() {
 
-	var rosters []Roster
+	//var rosters []Roster
 	rawJson, err := os.ReadFile("/home/jwhowell/Code_Projects/FantasyFootball/players.json")
 	if err != nil {
 		log.Fatalf("Error reading json file.")
@@ -66,43 +63,44 @@ func main() {
 	if err := json.Unmarshal(rawJson, &raw); err != nil {
 		log.Fatalf("unmarshal error: %v", err)
 	}
+	fmt.Println(raw)
+	/*
+	   data, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/matchups/1")
 
-	players := make([]Player, 0, len(raw))
-	for k, p := range raw {
-		if p.PlayerID == 0 {
-			if id, err := strconv.Atoi(k); err == nil {
-				p.PlayerID = id
-			}
-		}
-		players = append(players, p)
-	}
+	   	if err != nil {
+	   		log.Printf("Error at fetchHTML")
+	   	}
 
-	data, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/matchups/1")
-	if err != nil {
-		log.Printf("Error at fetchHTML")
-	}
-	err = json.Unmarshal([]byte(data), &rosters)
-	if err != nil {
-		log.Print(err)
-	}
-	fmt.Println(rosters[0])
+	   err = json.Unmarshal([]byte(data), &rosters)
 
-	db, err := sql.Open("sqlite", "football.db?_foreign_keys=1")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+	   	if err != nil {
+	   		log.Print(err)
+	   	}
 
-	ctx := context.Background()
+	   fmt.Println(rosters[0])
 
-	_, err = db.ExecContext(ctx, `
-		CREATE TABLE IF NOT EXISTS football (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			title TEXT NOT NULL,
-			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-		);
-	`)
-	if err != nil {
-		log.Fatal(err)
-	}
+	   db, err := sql.Open("sqlite", "football.db?_foreign_keys=1")
+
+	   	if err != nil {
+	   		log.Fatal(err)
+	   	}
+
+	   defer db.Close()
+
+	   ctx := context.Background()
+
+	   _, err = db.ExecContext(ctx, `
+
+	   	CREATE TABLE IF NOT EXISTS football (
+	   		id INTEGER PRIMARY KEY AUTOINCREMENT,
+	   		title TEXT NOT NULL,
+	   		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	   	);
+
+	   `)
+
+	   	if err != nil {
+	   		log.Fatal(err)
+	   	}
+	*/
 }
