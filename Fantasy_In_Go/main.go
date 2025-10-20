@@ -10,14 +10,39 @@ import (
 )
 
 type Roster struct {
-	Points         float64            `json:"points"`
-	Players        []string           `json:"players"`
-	RosterID       int                `json:"roster_id"`
-	CustomPoints   *float64           `json:"custom_points"` // nullable
-	MatchupID      int                `json:"matchup_id"`
-	Starters       []string           `json:"starters"`
-	StartersPoints []float64          `json:"starters_points"`
-	PlayersPoints  map[string]float64 `json:"players_points"`
+	LeagueID string   `json:"league_id"`
+	Metadata Metadata `json:"metadata"`
+	OwnerID  string   `json:"owner_id"`
+	Players  []string `json:"players"`
+	Reserve  any      `json:"reserve"`
+	RosterID int      `json:"roster_id"`
+	Settings Settings `json:"settings"`
+	Starters []string `json:"starters"`
+	Taxi     any      `json:"taxi"`
+}
+
+type Metadata struct {
+	AllowPNInactiveStarters       string `json:"allow_pn_inactive_starters"`
+	AllowPNPlayerInjuryStatus     string `json:"allow_pn_player_injury_status"`
+	AllowPNScoring                string `json:"allow_pn_scoring"`
+	Record                        string `json:"record"`
+	RestrictPNScoringStartersOnly string `json:"restrict_pn_scoring_starters_only"`
+	Streak                        string `json:"streak"`
+}
+
+type Settings struct {
+	Fpts               int `json:"fpts"`
+	FptsAgainst        int `json:"fpts_against"`
+	FptsAgainstDecimal int `json:"fpts_against_decimal"`
+	FptsDecimal        int `json:"fpts_decimal"`
+	Losses             int `json:"losses"`
+	Ppts               int `json:"ppts"`
+	PptsDecimal        int `json:"ppts_decimal"`
+	Ties               int `json:"ties"`
+	TotalMoves         int `json:"total_moves"`
+	WaiverBudgetUsed   int `json:"waiver_budget_used"`
+	WaiverPosition     int `json:"waiver_position"`
+	Wins               int `json:"wins"`
 }
 
 type Player struct {
@@ -53,7 +78,6 @@ func fetchHTML(url string) (string, error) {
 
 func main() {
 
-	//var rosters []Roster
 	rawJson, err := os.ReadFile("/home/jwhowell/Code_Projects/FantasyFootball/players.json")
 	if err != nil {
 		log.Fatalf("Error reading json file.")
@@ -63,7 +87,19 @@ func main() {
 	if err := json.Unmarshal(rawJson, &raw); err != nil {
 		log.Fatalf("unmarshal error: %v", err)
 	}
-	fmt.Println(raw)
+	fmt.Println(raw["6462"])
+
+	var roster map[string]Roster
+	jsonResp, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/rosters")
+	if err != nil {
+		log.Fatalf("Error fetching Json: %v", err)
+	}
+	if err := json.Unmarshal([]byte(jsonResp), &roster); err != nil {
+		log.Fatalf("Error unmarshalling Json: % v", err)
+	}
+
+	fmt.Println(roster)
+
 	/*
 	   data, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/matchups/1")
 
