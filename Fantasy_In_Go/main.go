@@ -57,6 +57,16 @@ type Player struct {
 	Age              int      `json:"age"`
 }
 
+type Matchups struct {
+	Points        float64            `json:"points"`
+	Players       []string           `json:"players"`
+	RosterID      int                `json:"roster_id"`
+	MatchupID     int                `json:"matchup_id"`
+	Starters      []string           `json:"starters"`
+	StarterPoints []float64          `json:"starter_points"`
+	PlayerPoints  map[string]float64 `json:"players_points"`
+}
+
 func fetchHTML(url string) (string, error) {
 
 	client := &http.Client{}
@@ -87,9 +97,11 @@ func main() {
 	if err := json.Unmarshal(rawJson, &raw); err != nil {
 		log.Fatalf("unmarshal error: %v", err)
 	}
+	fmt.Printf("\n------------------------------\n")
 	fmt.Println(raw["6462"])
+	fmt.Printf("\n------------------------------\n")
 
-	var roster map[string]Roster
+	var roster []Roster
 	jsonResp, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/rosters")
 	if err != nil {
 		log.Fatalf("Error fetching Json: %v", err)
@@ -98,8 +110,22 @@ func main() {
 		log.Fatalf("Error unmarshalling Json: % v", err)
 	}
 
+	fmt.Printf("\n------------------------------\n")
 	fmt.Println(roster)
+	fmt.Printf("\n------------------------------\n")
 
+	var matchups []Matchups
+	jsonResp, err = fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/matchups/6")
+	if err != nil {
+		log.Fatalf("Error fetching Json: %v", err)
+	}
+	if err := json.Unmarshal([]byte(jsonResp), &matchups); err != nil {
+		log.Fatalf("Error unmarshalling Json: % v", err)
+	}
+
+	fmt.Printf("\n------------------------------\n")
+	fmt.Println(matchups)
+	fmt.Printf("\n------------------------------\n")
 	/*
 	   data, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/matchups/1")
 
