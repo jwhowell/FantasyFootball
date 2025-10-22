@@ -126,43 +126,5 @@ func main() {
 	fmt.Printf("\n------------------------------\n")
 	fmt.Println(matchups)
 	fmt.Printf("\n------------------------------\n")
-	/*
-	   data, err := fetchHTML("https://api.sleeper.app/v1/league/1258515704311709696/matchups/1")
 
-	   	if err != nil {
-	   		log.Printf("Error at fetchHTML")
-	   	}
-
-	   err = json.Unmarshal([]byte(data), &rosters)
-
-	   	if err != nil {
-	   		log.Print(err)
-	   	}
-
-	   fmt.Println(rosters[0])
-
-	   db, err := sql.Open("sqlite", "football.db?_foreign_keys=1")
-
-	   	if err != nil {
-	   		log.Fatal(err)
-	   	}
-
-	   defer db.Close()
-
-	   ctx := context.Background()
-
-	   _, err = db.ExecContext(ctx, `
-
-	   	CREATE TABLE IF NOT EXISTS football (
-	   		id INTEGER PRIMARY KEY AUTOINCREMENT,
-	   		title TEXT NOT NULL,
-	   		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	   	);
-
-	   `)
-
-	   	if err != nil {
-	   		log.Fatal(err)
-	   	}
-	*/
 }
